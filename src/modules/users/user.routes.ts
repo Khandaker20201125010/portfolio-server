@@ -1,16 +1,11 @@
 import { Router } from "express";
-
-import {
-  authMiddleware,
-  ownerMiddleware,
-} from "../../middleware/auth.middleware";
-import { UserController } from "./user.controller";
+import { getAllUsers, UserController } from "./user.controller";
 
 const router = Router();
 
-router.use(authMiddleware, ownerMiddleware);
+// All routes in this router are already protected via app.ts
+router.get("/", getAllUsers);
+router.delete("/:id", UserController.deleteUser);
+router.patch("/:id/role", UserController.updateUserRole);
 
-router.delete("/users/:id", UserController.deleteUser);
-router.patch("/users/:id/role", UserController.updateUserRole);
-
-export default router;
+export const userRoutes = router;

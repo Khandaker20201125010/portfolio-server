@@ -2,6 +2,8 @@ import compression from "compression";
 import cors from "cors";
 import express from "express";
 import { AuthRoutes } from "./modules/auth/auth.routes";
+import { userRoutes } from "./modules/users/user.routes";
+import { authMiddleware, ownerMiddleware } from "./middleware/auth.middleware";
 
 const app = express();
 
@@ -13,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // routes
 app.use("/api/auth", AuthRoutes);
+app.use("/api/users", authMiddleware, ownerMiddleware, userRoutes);
 // app.use('/api/blogs', blogRoutes);
 // app.use('/api/projects', projectRoutes);
 

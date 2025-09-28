@@ -1,6 +1,33 @@
 import { Request, Response } from "express";
 import { UserService } from "./user.services";
+import { prisma } from "../../config/db";
 
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "All users retrieved successfully",
+      data: users,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching users",
+      error: error.message,
+    });
+  }
+};
  const deleteUser = async (req: Request, res: Response) => {
   try {
     const userId = Number(req.params.id);
