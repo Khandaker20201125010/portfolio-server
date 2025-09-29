@@ -4,29 +4,24 @@ import { verifyToken } from "../utils/jwt";
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   let token: string | undefined;
 
-  // Get the Authorization header (case-insensitive)
+  // Case-insensitive check for Authorization header
   let authHeader = req.headers.authorization || req.headers.Authorization;
 
-  // If it's an array, pick the first value
-  if (Array.isArray(authHeader)) {
-    authHeader = authHeader[0];
+  // If header is array, pick first
+  if (Array.isArray(authHeader)) authHeader = authHeader[0];
+
+  // If header starts with Bearer, strip prefix
+  if (typeof authHeader === "string") {
+    token = authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : authHeader;
   }
 
-  if (authHeader) {
-    if (authHeader.startsWith("Bearer ")) {
-      token = authHeader.split(" ")[1];
-    } else {
-      token = authHeader; // raw token without Bearer
-    }
-  }
-
-  // Fallback: x-access-token header
+  // Fallback: x-access-token
   if (!token && req.headers["x-access-token"]) {
     const xToken = req.headers["x-access-token"];
     token = Array.isArray(xToken) ? xToken[0] : xToken;
   }
 
-  // Fallback: query string ?token=...
+  // Fallback: query param ?token=...
   if (!token && req.query.token) {
     token = req.query.token as string;
   }
@@ -43,6 +38,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     return res.status(401).json({ success: false, message: "Invalid token" });
   }
 };
+
 
 // Only OWNER access
 export const ownerMiddleware = (req: Request, res: Response, next: NextFunction) => {

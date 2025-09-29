@@ -4,6 +4,8 @@ import express from "express";
 import { AuthRoutes } from "./modules/auth/auth.routes";
 import { userRoutes } from "./modules/users/user.routes";
 import { authMiddleware, ownerMiddleware } from "./middleware/auth.middleware";
+import { globalErrorHandler } from "./middleware/globalErrorHandler";
+import { blogRoutes } from "./modules/blog/blog.routes";
 
 const app = express();
 
@@ -16,12 +18,12 @@ app.use(express.urlencoded({ extended: true }));
 // routes
 app.use("/api/auth", AuthRoutes);
 app.use("/api/users", authMiddleware, ownerMiddleware, userRoutes);
-// app.use('/api/blogs', blogRoutes);
+app.use('/api/blogs', blogRoutes);
 // app.use('/api/projects', projectRoutes);
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "process.env.CLIENT_URL",
     credentials: true,
   })
 );
@@ -37,5 +39,6 @@ app.use((req, res, next) => {
     message: "Route Not Found",
   });
 });
+app.use(globalErrorHandler);
 
 export default app;
