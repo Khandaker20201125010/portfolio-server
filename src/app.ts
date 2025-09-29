@@ -6,6 +6,7 @@ import { userRoutes } from "./modules/users/user.routes";
 import { authMiddleware, ownerMiddleware } from "./middleware/auth.middleware";
 import { globalErrorHandler } from "./middleware/globalErrorHandler";
 import { blogRoutes } from "./modules/blog/blog.routes";
+import { projectRoutes } from "./modules/project/project.routes";
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", AuthRoutes);
 app.use("/api/users", authMiddleware, ownerMiddleware, userRoutes);
 app.use('/api/blogs', blogRoutes);
-// app.use('/api/projects', projectRoutes);
+app.use("/api/projects", projectRoutes);
 
 app.use(
   cors({
