@@ -4,7 +4,7 @@ import * as AuthService from "./auth.service";
 import { setToken } from "../../utils/authCookie";
 import { loginSchema, registerSchema } from "./auth.modal";
 
-export const register = async (req: Request, res: Response) => {
+const register = async (req: Request, res: Response) => {
   try {
     const data = registerSchema.parse(req.body);
     const user = await AuthService.registerUser(data);
@@ -18,11 +18,13 @@ export const register = async (req: Request, res: Response) => {
 
     res.status(201).json({ success: true, user, tokens });
   } catch (err: any) {
-    res.status(400).json({ success: false, message: err.errors || err.message });
+    res
+      .status(400)
+      .json({ success: false, message: err.errors || err.message });
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
   try {
     const data = loginSchema.parse(req.body);
     const { user } = await AuthService.loginUser(data);
@@ -36,6 +38,18 @@ export const login = async (req: Request, res: Response) => {
 
     res.json({ success: true, user, tokens });
   } catch (err: any) {
-    res.status(401).json({ success: false, message: err.errors || err.message });
+    res
+      .status(401)
+      .json({ success: false, message: err.errors || err.message });
   }
+};
+const logout = async (_req: Request, res: Response) => {
+  res.clearCookie("token");
+  res.json({ success: true, message: "Logged out successfully" });
+};
+
+export const authController = {
+  register,
+  login,
+  logout,
 };
