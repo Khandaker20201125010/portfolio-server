@@ -1,46 +1,45 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogController = void 0;
 const blog_service_1 = require("./blog.service");
 const blog_modal_1 = require("./blog.modal");
-const createBlog = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+const cloudinary_1 = require("../../config/cloudinary");
+const createBlog = async (req, res) => {
     try {
         const body = blog_modal_1.createBlogSchema.parse(req.body);
-        const user = req.user; // assuming authMiddleware sets req.user
+        const user = req.user;
         const authorId = Number((user === null || user === void 0 ? void 0 : user.id) || (user === null || user === void 0 ? void 0 : user.userId));
         if (!authorId)
-            return res.status(401).json({ success: false, message: "Unauthenticated" });
-        const imageUrl = (_b = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path) !== null && _b !== void 0 ? _b : undefined;
-        const blog = yield blog_service_1.blogService.createBlog(body, authorId, imageUrl);
+            return res
+                .status(401)
+                .json({ success: false, message: "Unauthenticated" });
+        let imageUrl = undefined;
+        if (req.file) {
+            const result = await cloudinary_1.cloudinaryUpload.uploader.upload(req.file.path, {
+                folder: "blogs",
+            });
+            imageUrl = result.secure_url;
+        }
+        const blog = await blog_service_1.blogService.createBlog(body, authorId, imageUrl);
         res.status(201).json({ success: true, data: blog });
     }
     catch (err) {
         return res.status(400).json({ success: false, message: err.message });
     }
-});
-const listBlogs = (_req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+};
+const listBlogs = async (_req, res, next) => {
     try {
-        const blogs = yield blog_service_1.blogService.getAllBlogs();
+        const blogs = await blog_service_1.blogService.getAllBlogs();
         res.json({ success: true, data: blogs });
     }
     catch (err) {
         next(err);
     }
-});
-const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+};
+const getBlog = async (req, res, next) => {
     try {
         const slug = String(req.params.slug || req.params.id);
-        const blog = yield blog_service_1.blogService.getBlogBySlug(slug);
+        const blog = await blog_service_1.blogService.getBlogBySlug(slug);
         if (!blog)
             return res.status(404).json({ success: false, message: "Not found" });
         res.json({ success: true, data: blog });
@@ -48,30 +47,43 @@ const getBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     catch (err) {
         next(err);
     }
-});
-const updateExisting = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+};
+const updateExisting = async (req, res, next) => {
     try {
         const id = Number(req.params.id);
         const body = blog_modal_1.updateBlogSchema.parse(req.body);
-        const imageUrl = (_b = (_a = req.file) === null || _a === void 0 ? void 0 : _a.path) !== null && _b !== void 0 ? _b : undefined;
-        const updated = yield blog_service_1.blogService.updateBlog(id, body, imageUrl);
+        let imageUrl = undefined;
+        // Get existing blog to delete old image
+        const existingBlog = await blog_service_1.blogService.getBlogBySlug(String(id));
+        if (req.file) {
+            if (existingBlog === null || existingBlog === void 0 ? void 0 : existingBlog.coverImage) {
+                await (0, cloudinary_1.deleteImageFromCLoudinary)(existingBlog.coverImage);
+            }
+            const result = await cloudinary_1.cloudinaryUpload.uploader.upload(req.file.path, {
+                folder: "blogs",
+            });
+            imageUrl = result.secure_url;
+        }
+        const updated = await blog_service_1.blogService.updateBlog(id, body, imageUrl);
         res.json({ success: true, data: updated });
     }
     catch (err) {
         next(err);
     }
-});
-const removeBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+};
+const removeBlog = async (req, res, next) => {
     try {
         const id = Number(req.params.id);
-        yield blog_service_1.blogService.deleteBlog(id); // <- Use service object
+        const blog = await blog_service_1.blogService.getBlogBySlug(String(id));
+        if (blog === null || blog === void 0 ? void 0 : blog.coverImage)
+            await (0, cloudinary_1.deleteImageFromCLoudinary)(blog.coverImage);
+        await blog_service_1.blogService.deleteBlog(id);
         res.json({ success: true, message: "Deleted" });
     }
     catch (err) {
         next(err);
     }
-});
+};
 exports.blogController = {
     createBlog,
     listBlogs,

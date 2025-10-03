@@ -32,62 +32,42 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
 const AuthService = __importStar(require("./auth.service"));
 const authCookie_1 = require("../../utils/authCookie");
 const auth_modal_1 = require("./auth.modal");
-const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const register = async (req, res) => {
     try {
         const data = auth_modal_1.registerSchema.parse(req.body);
-        const user = yield AuthService.registerUser(data);
-        const tokens = (0, authCookie_1.setToken)({
-            res,
-            userId: user.id,
-            role: user.role,
-            isProduction: process.env.NODE_ENV === "production",
-        });
+        const user = await AuthService.registerUser(data);
+        const tokens = (0, authCookie_1.setToken)({ res, userId: user.id, role: user.role });
         res.status(201).json({ success: true, user, tokens });
     }
     catch (err) {
+        console.error("Register Error:", err);
         res
             .status(400)
             .json({ success: false, message: err.errors || err.message });
     }
-});
-const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+};
+const login = async (req, res) => {
     try {
         const data = auth_modal_1.loginSchema.parse(req.body);
-        const { user } = yield AuthService.loginUser(data);
-        const tokens = (0, authCookie_1.setToken)({
-            res,
-            userId: user.id,
-            role: user.role,
-            isProduction: process.env.NODE_ENV === "production",
-        });
+        const { user } = await AuthService.loginUser(data);
+        const tokens = (0, authCookie_1.setToken)({ res, userId: user.id, role: user.role });
         res.json({ success: true, user, tokens });
     }
     catch (err) {
+        console.error("Login Error:", err);
         res
             .status(401)
             .json({ success: false, message: err.errors || err.message });
     }
-});
-const logout = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.clearCookie("token");
-    res.json({ success: true, message: "Logged out successfully" });
-});
-exports.authController = {
-    register,
-    login,
-    logout,
 };
+const logout = async (_req, res) => {
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    res.json({ success: true, message: "Logged out successfully" });
+};
+exports.authController = { register, login, logout };

@@ -27,7 +27,7 @@ import { CreateBlogInput, UpdateBlogInput } from "./blog.modal";
   return prisma.blog.findUnique({ where: { slug } });
 };
 
- const updateBlog = async (id: number, data: UpdateBlogInput, imageUrl?: string) => {
+const updateBlog = async (id: number, data: UpdateBlogInput, imageUrl?: string) => {
   const payload: any = { ...data };
   if (imageUrl) payload.coverImage = imageUrl;
   return prisma.blog.update({ where: { id }, data: payload });

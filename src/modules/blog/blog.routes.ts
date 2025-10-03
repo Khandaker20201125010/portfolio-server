@@ -7,6 +7,10 @@ import { multerUpload } from "../../config/multer.config";
 
 const router = Router();
 
+// Public routes
+router.get("/", blogController.listBlogs);
+router.get("/:slug", blogController.getBlog);
+
 // Protect all routes for authenticated users
 router.use(authMiddleware);
 
@@ -15,8 +19,6 @@ router.post("/", ownerMiddleware, multerUpload.single("coverImage"), blogControl
 router.patch("/:id", ownerMiddleware, multerUpload.single("coverImage"), blogController.updateExisting);
 router.delete("/:id", ownerMiddleware, blogController.removeBlog);
 
-// Public routes
-router.get("/", blogController.listBlogs);
-router.get("/:slug", blogController.getBlog);
+
 
 export const blogRoutes = router;
