@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.projectService = void 0;
 const db_1 = require("../../config/db");
 const createProject = async (data, authorId, imageUrl) => {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     return db_1.prisma.project.create({
         data: {
             title: data.title,
@@ -12,7 +12,8 @@ const createProject = async (data, authorId, imageUrl) => {
             features: (_a = data.features) !== null && _a !== void 0 ? _a : [],
             thumbnail: (_b = imageUrl !== null && imageUrl !== void 0 ? imageUrl : data.thumbnail) !== null && _b !== void 0 ? _b : null,
             liveUrl: (_c = data.liveUrl) !== null && _c !== void 0 ? _c : null,
-            repoUrl: (_d = data.repoUrl) !== null && _d !== void 0 ? _d : null,
+            frontendRepoUrl: (_d = data.frontendRepoUrl) !== null && _d !== void 0 ? _d : null,
+            backendRepoUrl: (_e = data.backendRepoUrl) !== null && _e !== void 0 ? _e : null,
             authorId,
         },
     });

@@ -28,4 +28,9 @@ const storage = new multer_storage_cloudinary_1.CloudinaryStorage({
         }
     }
 });
-exports.multerUpload = (0, multer_1.default)({ storage: storage });
+exports.multerUpload = (0, multer_1.default)({
+    storage,
+    limits: {
+        fileSize: 20 * 1024 * 1024,
+    },
+});

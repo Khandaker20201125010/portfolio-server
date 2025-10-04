@@ -8,8 +8,19 @@ interface AuthRequest extends Request {
 
 const createProject = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const body = createProjectSchema.parse(req.body);
-    const user = req.user as any; // set by authMiddleware
+    let rawBody = { ...req.body };
+
+    // ✅ Parse features if it's a JSON string
+    if (typeof rawBody.features === "string") {
+      try {
+        rawBody.features = JSON.parse(rawBody.features);
+      } catch {
+        rawBody.features = [rawBody.features];
+      }
+    }
+
+    const body = createProjectSchema.parse(rawBody);
+    const user = req.user as any;
     const authorId = Number(user?.id || user?.userId);
 
     if (!authorId) {
@@ -24,6 +35,7 @@ const createProject = async (req: AuthRequest, res: Response, next: NextFunction
     next(err);
   }
 };
+
 
 const listProjects = async (_req: Request, res: Response, next: NextFunction) => {
   try {

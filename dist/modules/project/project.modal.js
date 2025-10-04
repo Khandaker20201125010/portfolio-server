@@ -9,6 +9,7 @@ exports.createProjectSchema = zod_1.z.object({
     features: zod_1.z.array(zod_1.z.string()).optional(),
     thumbnail: zod_1.z.string().optional(),
     liveUrl: zod_1.z.string().url().optional(),
-    repoUrl: zod_1.z.string().url().optional(),
+    frontendRepoUrl: zod_1.z.string().url().optional(),
+    backendRepoUrl: zod_1.z.string().url().optional(),
 });
 exports.updateProjectSchema = exports.createProjectSchema.partial();

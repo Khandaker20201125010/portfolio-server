@@ -37,18 +37,19 @@ model Blog {
 }
 
 model Project {
-  id          Int      @id @default(autoincrement())
-  title       String
-  slug        String   @unique
-  description String
-  features    String[] @default([])
-  thumbnail   String?
-  liveUrl     String?
-  repoUrl     String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  authorId    Int
-  author      User     @relation(fields: [authorId], references: [id])
+  id              Int      @id @default(autoincrement())
+  title           String
+  slug            String   @unique
+  description     String
+  features        String[] @default([])
+  thumbnail       String?
+  liveUrl         String?
+  frontendRepoUrl String?
+  backendRepoUrl  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  authorId        Int
+  author          User     @relation(fields: [authorId], references: [id])
 }
 
 enum UserRole {

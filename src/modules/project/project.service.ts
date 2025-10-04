@@ -1,6 +1,10 @@
 import { prisma } from "../../config/db";
 import { CreateProjectInput, UpdateProjectInput } from "./project.modal";
-const createProject = async (data: CreateProjectInput, authorId: number, imageUrl?: string) => {
+const createProject = async (
+  data: CreateProjectInput,
+  authorId: number,
+  imageUrl?: string
+) => {
   return prisma.project.create({
     data: {
       title: data.title,
@@ -9,7 +13,8 @@ const createProject = async (data: CreateProjectInput, authorId: number, imageUr
       features: data.features ?? [],
       thumbnail: imageUrl ?? data.thumbnail ?? null,
       liveUrl: data.liveUrl ?? null,
-      repoUrl: data.repoUrl ?? null,
+      frontendRepoUrl: data.frontendRepoUrl ?? null,
+      backendRepoUrl: data.backendRepoUrl ?? null,
       authorId,
     },
   });
@@ -29,7 +34,11 @@ const getProjectById = async (id: number) => {
   return prisma.project.findUnique({ where: { id } });
 };
 
-const updateProject = async (id: number, data: UpdateProjectInput, imageUrl?: string) => {
+const updateProject = async (
+  id: number,
+  data: UpdateProjectInput,
+  imageUrl?: string
+) => {
   const payload: any = { ...data };
   if (imageUrl) payload.thumbnail = imageUrl;
   return prisma.project.update({ where: { id }, data: payload });

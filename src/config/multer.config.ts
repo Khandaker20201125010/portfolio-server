@@ -5,10 +5,11 @@ import { cloudinaryUpload } from "./cloudinary";
 const storage = new CloudinaryStorage({
     cloudinary: cloudinaryUpload,
     params: {
+        
         public_id: (req, file) => {
             // My Special.Image#!@.png => 4545adsfsadf-45324263452-my-image.png
             // My Special.Image#!@.png => [My Special, Image#!@, png]
-
+            
             const fileName = file.originalname
                 .toLowerCase()
                 .replace(/\s+/g, "-") // empty space remove replace with dash
@@ -28,4 +29,9 @@ const storage = new CloudinaryStorage({
     }
 })
 
-export const multerUpload = multer({ storage: storage })
+export const multerUpload = multer({
+  storage,
+  limits: {
+    fileSize: 20 * 1024 * 1024, 
+  },
+});

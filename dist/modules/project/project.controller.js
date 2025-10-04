@@ -6,8 +6,18 @@ const project_modal_1 = require("./project.modal");
 const createProject = async (req, res, next) => {
     var _a, _b;
     try {
-        const body = project_modal_1.createProjectSchema.parse(req.body);
-        const user = req.user; // set by authMiddleware
+        let rawBody = { ...req.body };
+        // ✅ Parse features if it's a JSON string
+        if (typeof rawBody.features === "string") {
+            try {
+                rawBody.features = JSON.parse(rawBody.features);
+            }
+            catch {
+                rawBody.features = [rawBody.features];
+            }
+        }
+        const body = project_modal_1.createProjectSchema.parse(rawBody);
+        const user = req.user;
         const authorId = Number((user === null || user === void 0 ? void 0 : user.id) || (user === null || user === void 0 ? void 0 : user.userId));
         if (!authorId) {
             return res.status(401).json({ success: false, message: "Unauthenticated" });

@@ -7,7 +7,8 @@ export const createProjectSchema = z.object({
   features: z.array(z.string()).optional(),
   thumbnail: z.string().optional(),
   liveUrl: z.string().url().optional(),
-  repoUrl: z.string().url().optional(),
+  frontendRepoUrl: z.string().url().optional(),
+  backendRepoUrl: z.string().url().optional(),
 });
 
 export const updateProjectSchema = createProjectSchema.partial();
