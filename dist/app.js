@@ -13,6 +13,7 @@ const auth_middleware_1 = require("./middleware/auth.middleware");
 const globalErrorHandler_1 = require("./middleware/globalErrorHandler");
 const blog_routes_1 = require("./modules/blog/blog.routes");
 const project_routes_1 = require("./modules/project/project.routes");
+const contact_route_1 = require("./modules/Contact/contact.route");
 const app = (0, express_1.default)();
 // Middleware
 app.use((0, compression_1.default)());
@@ -28,6 +29,7 @@ app.use("/api/auth", auth_routes_1.AuthRoutes);
 app.use("/api/users", auth_middleware_1.authMiddleware, auth_middleware_1.ownerMiddleware, user_routes_1.userRoutes);
 app.use("/api/blogs", blog_routes_1.blogRoutes);
 app.use("/api/projects", project_routes_1.projectRoutes);
+app.use("/api/contact", contact_route_1.contactRoutes);
 // Health check
 app.get("/", (_req, res) => res.send("API is running"));
 // 404 Handler

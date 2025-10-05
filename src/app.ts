@@ -9,6 +9,7 @@ import { authMiddleware, ownerMiddleware } from "./middleware/auth.middleware";
 import { globalErrorHandler } from "./middleware/globalErrorHandler";
 import { blogRoutes } from "./modules/blog/blog.routes";
 import { projectRoutes } from "./modules/project/project.routes";
+import { contactRoutes } from "./modules/Contact/contact.route";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/auth", AuthRoutes);
 app.use("/api/users", authMiddleware, ownerMiddleware, userRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Health check
 app.get("/", (_req, res) => res.send("API is running"));
