@@ -21,8 +21,11 @@ app.use(express_1.default.json({ limit: "5mb" }));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, cors_1.default)({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
-    credentials: true, // important for cookies
+    origin: [
+        "http://localhost:3000",
+        process.env.FRONTEND_URL,
+    ],
+    credentials: true,
 }));
 // Routes
 app.use("/api/auth", auth_routes_1.AuthRoutes);
